@@ -1,23 +1,68 @@
-//Guess that pokemon
-//First we need to pick a random pokemon
-//We need to have information requests
-//A basic html to display what is known
-//reset button to pick a new pokemon
-//differnt types of input to see what you want to know.
-/*
-    The core idea of differnt inputs is we can ask questions, the less questions asked, the better your score will be.
-    What questions to ask is
-    What is one of it's stats (attack, defence, special, etc.)
-    What is one of it's abilties can it have? counts as two questions 
-    What item does it tend to hold
-    What is a move does it know? counts as three questions
-    How many moves can it know? move pool quanty?
-    Does it have one or two types? 
-    What type is it? counts as 3 questions
-    Each failed guess will count as a question.
+/* 
+Random pokemon picker.
+currently as of writing this there are 1118 pokemon the pokemon api supports.
+lets just have a button that just when clicked picks a random pokemon.
+
 */
+//Math.floor(Math.random() * 1118) + 1; //This line of code picks a random pokemon in the range i have set
+const currentDate = new Date();
+document.querySelector('#year').textContent = currentDate.getFullYear();
+let currentPokemon 
+const pokemonList = "https://pokeapi.co/api/v2/pokemon/"
+fetch(target).then(result=>result.json()).then(letsTry=>currentPokemon=letsTry);
 
-function reset()
+//Define all things that need to be changed.
+/*
+<h2 id="name">Not defined yet</h2>
+<img id = 'pokeimg' alt="Not defined yet">
+<h3 id="Type">Type: </h3>
+<p id="types">unkownType</p>
+<h3 id="abillityH3">Possible Abillities</h3>
+<p id="abillities">Missing info</p>
+<button id="randomize">New Pokemon</button> 
+*/
+//Shiny Check code Math.floor(Math.random()* 8192)+1; display shiny version instead.
+function resetPoke()
 {
-
+    document.querySelector('#name').textContent = '';
+    document.querySelector('#pokeimg').src = '';
+    document.querySelector('#types').textContent = '';
+    while(document.querySelector('#types').hasChildNodes())
+    {
+        document.querySelector('#types').removeChild(0)
+    }
+    
 }
+
+function displayPokemon(pokemon)
+{   
+    let y = document.querySelector('#types');
+    for(let x of pokemon.types)
+    {
+        let temp = document.createElement('a')
+        temp.textContent = x.type.name.charAt(0).toUpperCase() + x.type.name.slice(1)+" ";
+        y.appendChild(temp)
+    }
+    let z = document.querySelector('#name');
+    z.textContent = pokemon.species.name.charAt(0).toUpperCase() + pokemon.species.name.slice(1)
+    let w=document.querySelector('#pokeimg');
+    let shinyCheck
+    shinyCheck = Math.floor(Math.random()* 8192);
+    if(shinyCheck===0 || forcedShiny == true){
+        w.src = pokemon.sprites.front_shiny;
+    }
+    else
+    {
+        w.src = pokemon.sprites.front_default;
+    }
+}
+function pickPokemon()
+{
+    let target = pokemonList + String(Math.floor(Math.random() * 1118) + 1);
+    fetch(target).then(result=>result.json()).then(letsTry=>currentPokemon=letsTry);
+    resetPoke();
+    displayPokemon(currentPokemon);
+}
+forcedShiny=false
+randomizerButton = document.querySelector('#randomize');
+randomizerButton.addEventListener('click', pickPokemon);
